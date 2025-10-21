@@ -1,0 +1,154 @@
+name: mpc-qt
+base: core24
+version: '25.07'
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+summary: Media Player Classic reimplemented with Qt and libmpv
+description: |
+   Open source media player focusing on ease of use and effectiveness.
+
+    Features:
+
+    Multiple playlists
+    Video preview on seekbar (thumbnail)
+    Quick queueing like xmms/qmmp
+    Play online videos (with youtube-dl)
+    Configurable shortcuts and mouse buttons
+    Multimedia keys support (Mpris)
+    Web interface
+    Thumbnails maker
+
+grade: stable
+confinement: strict
+
+apps:
+  mpc-qt:
+    command: usr/bin/mpc-qt
+    desktop: usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+    common-id: io.github.mpc_qt.mpc-qt
+    extensions: [kde-neon-6]
+    environment:
+      QT_QPA_PLATFORMTHEME: xdgdesktopportal
+      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
+    plugs:
+      - screen-inhibit-control
+      - home
+      - removable-media
+    slots:
+      - mpris
+
+plugs:
+  shared-memory:
+    private: true
+  lxqt-support:
+    content: lxqt-support
+    interface: content
+    target: $SNAP/lxqt-support
+    default-provider: lxqt-support
+
+layout:
+  /usr/share/color-schemes:
+    symlink: $SNAP/lxqt-support/usr/share/color-schemes
+  /usr/share/Kvantum:
+    symlink: $SNAP/lxqt-support/usr/share/Kvantum
+
+package-repositories:
+  - type: apt
+    url: http://origin.archive.neon.kde.org/user
+    suites: [noble]
+    components: [main]
+    architectures: [amd64, arm64]
+    key-id: 444DABCF3667D0283F894EDDE6D4736255751E5D
+
+parts:
+  mpc-qt-player:
+    plugin: cmake
+    source: https://github.com/mpc-qt/mpc-qt.git
+    source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    build-packages:
+      - libmpv-dev
+      - libboost-dev
+    cmake-parameters:
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DMPCQT_VERSION=25.07-Snap-NyKyu
+    override-build: |
+      craftctl default
+      sed -i 's|Name=Media Player Classic Qute Theater|Name=MPC-QT [NyKyu]|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+      sed -i 's|Exec=mpc-qt %U|Exec=${SNAP}/usr/bin/mpc-qt %U|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+      sed -i 's|TryExec=mpc-qt|TryExec=${SNAP}/usr/bin/mpc-qt|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+      sed -i 's|Icon=mpc-qt|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/mpc-qt.svg|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+
+  dependencies:
+    after: [mpc-qt-player]
+    plugin: nil
+    stage-packages:
+      - libsdl2-2.0-0
+      - libxpresent1
+      - libxv1
+      - libavdevice60
+      - libavfilter9
+      - libbs2b0
+      - libcdio19t64
+      - libcdio-cdda2t64
+      - libcdio-paranoia2t64
+      - libdecor-0-0
+      - libfftw3-double3
+      - libflite1
+      - libjack0
+      - liblilv-0-0
+      - libmpv2
+      - libmujs3
+      - libplacebo338
+      - libpocketsphinx3
+      - librubberband2
+      - libserd-0-0
+      - libsixel1
+      - libsord-0-0
+      - libsphinxbase3t64
+      - libsratom-0-0
+      - libuchardet0
+      - libvidstab1.1
+      - libzimg2
+      - libzix-0-0
+    prime:
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libSDL2-2.0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libXpresent.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libXv.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libavdevice.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libavfilter.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libbs2b.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcdio.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcdio_cdda.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libcdio_paranoia.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdecor-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libfftw3.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_us_awb.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_us_kal.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_us_kal16.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_us_rms.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmu_us_slt.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_cmulex.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libflite_usenglish.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libjack.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/liblilv-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libmpv.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libmujs.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libplacebo.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libpocketsphinx.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/librubberband.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libserd-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsixel.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsord-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsphinxbase.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libsratom-0.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libuchardet.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libvidstab.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libzimg.so*
+      - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libzix-0.so*
