@@ -42,6 +42,7 @@ apps:
       - screen-inhibit-control
       - home
       - removable-media
+      - mount-observe
     slots:
       - mpris
 
@@ -61,12 +62,6 @@ layout:
     symlink: $SNAP/lxqt-support-core24/usr/share/Kvantum
 
 package-repositories:
-  - type: apt
-    url: http://origin.archive.neon.kde.org/user
-    suites: [noble]
-    components: [main]
-    architectures: [amd64, arm64]
-    key-id: 444DABCF3667D0283F894EDDE6D4736255751E5D
   - type: apt
     url: https://ppa.launchpadcontent.net/ubuntuhandbook1/mpv/ubuntu
     suites: [noble]
@@ -94,7 +89,7 @@ parts:
       - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Snap-NyKyu
     override-build: |
       craftctl default
-      sed -i 's|Name=Media Player Classic Qute Theater|Name=MPC-QT [NyKyu]|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
+      sed -i 's|Name=Media Player Classic Qute Theater|Name=MPC-QT [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
 
   dependencies:
     after: [mpc-qt-app]
