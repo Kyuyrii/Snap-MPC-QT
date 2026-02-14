@@ -36,8 +36,8 @@ apps:
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
       PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
-      LD_LIBRARY_PATH: $SNAP/lxqt-support-core24/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      QT_PLUGIN_PATH: $SNAP/lxqt-support-core24/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
+      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
+      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     plugs:
       - screen-inhibit-control
       - home
@@ -52,14 +52,12 @@ plugs:
   lxqt-support-core24:
     content: lxqt-support-core24
     interface: content
-    target: $SNAP/lxqt-support-core24
+    target: $SNAP/lxqt-support
     default-provider: lxqt-support-core24
 
 layout:
-  /usr/share/color-schemes:
-    symlink: $SNAP/lxqt-support-core24/usr/share/color-schemes
   /usr/share/Kvantum:
-    symlink: $SNAP/lxqt-support-core24/usr/share/Kvantum
+    symlink: $SNAP/lxqt-support/usr/share/Kvantum
 
 package-repositories:
   - type: apt
@@ -86,7 +84,7 @@ parts:
       - libproxy-dev
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Snap-NyKyu
+      - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Snap-Kyu
     override-build: |
       craftctl default
       sed -i 's|Name=Media Player Classic Qute Theater|Name=MPC-QT [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
