@@ -43,12 +43,16 @@ apps:
       - home
       - removable-media
       - mount-observe
-    slots:
-      - mpris
+      - udisks2
 
 plugs:
   shared-memory:
     private: true
+
+slots:
+  mpris:
+    interface: mpris
+    name: MpcQt
 
 package-repositories:
   - type: apt
