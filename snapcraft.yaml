@@ -49,15 +49,6 @@ apps:
 plugs:
   shared-memory:
     private: true
-  lxqt-support-core24:
-    content: lxqt-support-core24
-    interface: content
-    target: $SNAP/lxqt-support
-    default-provider: lxqt-support-core24
-
-layout:
-  /usr/share/Kvantum:
-    symlink: $SNAP/lxqt-support/usr/share/Kvantum
 
 package-repositories:
   - type: apt
@@ -85,6 +76,7 @@ parts:
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
       - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Snap-Kyu
+      - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     override-build: |
       craftctl default
       sed -i 's|Name=Media Player Classic Qute Theater|Name=MPC-QT [Kyu]|' $CRAFT_PART_INSTALL/usr/share/applications/io.github.mpc_qt.mpc-qt.desktop
@@ -121,22 +113,8 @@ parts:
       - libvidstab1.1
       - libzimg2
       - libzix-0-0
+      - libglut3.12
       - yt-dlp
-
-  cleanup:
-    after: [mpc-qt-app, dependencies]
-    plugin: nil
-    build-snaps:
-      - mesa-2404
-      - kf6-core24
-    override-prime: |
-      set -eux
-      cd /snap/mesa-2404/current/usr/lib
-      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/lib/{} \;
-      cd /snap/mesa-2404/current/usr/share
-      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/share/{} \;
-
-      cd /snap/kf6-core24/current/usr/lib
-      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/lib/{} \;
-      cd /snap/kf6-core24/current/usr/share
-      find . -type f,l -exec rm -f $CRAFT_PRIME/usr/share/{} \;
+    prime:
+      - usr/lib
+      - usr/bin
