@@ -36,8 +36,6 @@ apps:
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
       PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
-      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     plugs:
       - screen-inhibit-control
       - home
@@ -75,7 +73,7 @@ parts:
       - libproxy-dev
     cmake-parameters:
       - -DCMAKE_INSTALL_PREFIX=/usr
-      - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Snap-Kyu
+      - -DMPCQT_VERSION=$SNAPCRAFT_PROJECT_VERSION-Kyu
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
     override-build: |
       craftctl default
@@ -115,6 +113,18 @@ parts:
       - libzix-0-0
       - libglut3.12
       - yt-dlp
-    prime:
-      - usr/lib
-      - usr/bin
+
+  kf6-cleanup:
+    after: [dependencies]
+    plugin: nil
+    source: https://github.com/canonical/gpu-snap.git
+    build-snaps:
+    - kf6-core24
+    - gtk-common-themes
+    override-prime: |
+      craftctl default
+      ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
+      set -eux
+      for snap in "kf6-core26" "gtk-common-themes"; do
+          cd "/snap/$snap/current" && find . -type f,l \( -name "*.so.*" -o -name "*.so" \) -exec rm -f "$CRAFT_PRIME/{}" \;
+      done
