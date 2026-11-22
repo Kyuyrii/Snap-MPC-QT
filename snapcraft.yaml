@@ -1,6 +1,7 @@
 name: mpc-qt
 base: core24
 version: '26.07'
+adopt-info: mpc-qt-app
 platforms:
   amd64:
     build-on: [amd64]
@@ -8,21 +9,6 @@ platforms:
   arm64:
     build-on: [arm64]
     build-for: [arm64]
-summary: Media Player Classic reimplemented with Qt and libmpv
-description: |
-   Open source media player focusing on ease of use and effectiveness.
-
-    Features:
-
-    Multiple playlists
-    Video preview on seekbar (thumbnail)
-    Quick queueing like xmms/qmmp
-    Play online videos (with youtube-dl)
-    Configurable shortcuts and mouse buttons
-    Multimedia keys support (Mpris)
-    Web interface
-    Thumbnails maker
-
 grade: stable
 confinement: strict
 icon: mpc-qt.svg
@@ -35,7 +21,7 @@ apps:
     extensions: [kde-neon-6]
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
-      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
+      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$SNAP/lib/python3.12/site-packages:$PYTHONPATH
     plugs:
       - screen-inhibit-control
       - home
@@ -55,18 +41,13 @@ package-repositories:
     components: [main]
     architectures: [amd64, arm64]
     key-id: F4E48910A020E77056748B745738AE8480447DDF
-  - type: apt
-    url: https://ppa.launchpadcontent.net/tomtomtom/yt-dlp/ubuntu
-    suites: [noble]
-    components: [main]
-    architectures: [amd64, arm64]
-    key-id: CEC312CC5ED8215A6E0EFC49B90E9186F0E836FB
 
 parts:
   mpc-qt-app:
     plugin: cmake
     source: https://github.com/mpc-qt/mpc-qt.git
     source-tag: v$SNAPCRAFT_PROJECT_VERSION
+    parse-info: [data/io.github.mpc_qt.mpc-qt.metainfo.xml]
     build-packages:
       - libmpv-dev
       - libboost-dev
@@ -81,37 +62,11 @@ parts:
 
   dependencies:
     after: [mpc-qt-app]
-    plugin: nil
+    plugin: python
+    source: .
     stage-packages:
-      - libsdl2-2.0-0
-      - libxpresent1
-      - libxv1
-      - libavdevice60
-      - libavfilter9
-      - libbs2b0
-      - libcdio19t64
-      - libcdio-cdda2t64
-      - libcdio-paranoia2t64
-      - libdecor-0-0
-      - libfftw3-double3
-      - libflite1
-      - libjack0
-      - liblilv-0-0
       - libmpv2
-      - libmujs3
-      - libplacebo338
-      - libpocketsphinx3
-      - librubberband2
-      - libserd-0-0
-      - libsixel1
-      - libsord-0-0
-      - libsphinxbase3t64
-      - libsratom-0-0
-      - libuchardet0
-      - libvidstab1.1
-      - libzimg2
-      - libzix-0-0
-      - libglut3.12
+    python-packages:
       - yt-dlp
 
   kf6-cleanup:
@@ -125,6 +80,6 @@ parts:
       craftctl default
       ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
       set -eux
-      for snap in "kf6-core26" "gtk-common-themes"; do
+      for snap in "kf6-core24" "gtk-common-themes"; do
           cd "/snap/$snap/current" && find . -type f,l \( -name "*.so.*" -o -name "*.so" \) -exec rm -f "$CRAFT_PRIME/{}" \;
       done
