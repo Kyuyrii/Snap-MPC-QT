@@ -28,6 +28,7 @@ apps:
       - removable-media
       - mount-observe
       - udisks2
+      - optical-drive
     slots: [mpris]
 
 plugs:
